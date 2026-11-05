@@ -12,3 +12,57 @@ img,
 video {
   display: block;
 }
+
+// body {
+//   background: #000;
+//   color: #33ff66;
+//   font-family: "Courier New", monospace;
+//   margin: 0;
+// }
+
+// .terminal {
+//   max-width: 100%;
+//   margin: 0 auto;
+//   padding: 24px;
+// }
+
+// .terminal__log {
+//   max-height: 70vh;
+//   overflow-y: auto;
+// }
+
+// .terminal__text {
+//   margin: 0 0 8px;
+//   white-space: pre-wrap;
+//   overflow-wrap: anywhere;
+// }
+
+// .terminal__line {
+//   display: flex;
+//   gap: 8px;
+// }
+
+// .terminal__input {
+//   flex: 1;
+//   background: transparent;
+//   border: 0;
+//   outline: 0;
+//   color: inherit;
+//   font: inherit;
+// }
+
+// .ticket {
+//   width: 32ch;
+//   background: #f5f0e1;
+//   color: #111;
+//   padding: 12px;
+// }
+
+.ticket {
+  width: fit-content;
+  background: #f5f0e1;
+  color: #111;
+  padding: 12px;
+  white-space: pre;
+  overflow-wrap: normal;
+}
