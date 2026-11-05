@@ -1,5 +1,3 @@
-import { formatTicket } from "./ticket.js";
-
 async function askServer(question) {
   const response = await fetch(
     `http://localhost:3000/ask?q=${encodeURIComponent(question)}`,
@@ -9,7 +7,7 @@ async function askServer(question) {
   if (!response.ok) {
     throw new Error(data.error || "Erreur serveur");
   }
-  return data.answer;
+  return data;
 }
 
 window.askServer = askServer;
@@ -40,10 +38,8 @@ input.addEventListener("keydown", async (event) => {
   const status = addLine("TRAITEMENT EN COURS...");
 
   try {
-    const answer = await askServer(question);
-    status.textContent = "REPONSE RECUE.";
-    ticketNumber += 1;
-    addLine(formatTicket(answer, ticketNumber), "ticket");
+    const result = await askServer(question);
+    status.textContent = `TICKET ${String(result.number).padStart(4, "0")} ENVOYE A L'IMPRIMANTE.`;
   } catch (error) {
     status.textContent = `ERREUR : ${error.message}`;
   } finally {

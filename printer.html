@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IMPRIMANTE VIRTUELLE</title>
+    <style>
+      body {
+        background: #222;
+        color: #ccc;
+        font-family: "Courier New", monospace;
+        margin: 0;
+        padding: 24px;
+      }
+      #paper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .ticket {
+        width: 32ch;
+        background: #f5f0e1;
+        color: #111;
+        padding: 12px;
+        margin: 0;
+        white-space: pre;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="status">CONNEXION...</p>
+    <main id="paper"></main>
+
+    <script>
+      const paper = document.querySelector("#paper");
+      const status = document.querySelector("#status");
+
+      const source = new EventSource("/stream");
+
+      source.onopen = () => {
+        paper.replaceChildren();
+        status.textContent = "IMPRIMANTE EN LIGNE";
+      };
+
+      source.onerror = () => {
+        status.textContent = "SERVEUR INJOIGNABLE... NOUVELLE TENTATIVE";
+      };
+
+      source.onmessage = (event) => {
+        const { text } = JSON.parse(event.data);
+        const ticket = document.createElement("pre");
+        ticket.className = "ticket";
+        ticket.textContent = text;
+        paper.prepend(ticket);
+      };
+    </script>
+  </body>
+</html>

@@ -2,6 +2,31 @@ import http from "node:http";
 import { askAI } from "./ai.mjs";
 
 const PORT = 3000;
+const PRINTER_URL = "http://localhost:4000/print";
+let ticketNumber = 0;
+
+async function printerIsOnline() {
+  try {
+    const response = await fetch(new URL("/status", PRINTER_URL), {
+      signal: AbortSignal.timeout(2000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function sendToPrinter(ticket) {
+  const response = await fetch(PRINTER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ticket),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Serveur imprimante : erreur ${response.status}`);
+  }
+}
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -17,9 +42,17 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (!(await printerIsOnline())) {
+      res.statusCode = 503;
+      res.end(JSON.stringify({ error: "Serveur imprimante injoignable" }));
+      return;
+    }
+
     try {
       const answer = await askAI(question);
-      res.end(JSON.stringify({ answer }));
+      ticketNumber += 1;
+      await sendToPrinter({ number: ticketNumber, answer });
+      res.end(JSON.stringify({ number: ticketNumber }));
     } catch (error) {
       res.statusCode = 500;
       res.end(JSON.stringify({ error: error.message }));
@@ -32,5 +65,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Serveur pret : http://localhost:${PORT}`);
+  console.log(`Serveur principal pret : http://localhost:${PORT}`);
 });
