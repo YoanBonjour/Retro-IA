@@ -59,7 +59,11 @@ const server = http.createServer(async (req, res) => {
     }
     return;
   }
-
+  if (url.pathname === "/status") {
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.end(JSON.stringify({ server: true, printer: await printerIsOnline() }));
+    return;
+  }
   res.statusCode = 404;
   res.end("Not found");
 });
