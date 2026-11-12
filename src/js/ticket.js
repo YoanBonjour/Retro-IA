@@ -1,3 +1,4 @@
+/* ---------- Ticket formatting ---------- */
 export const WIDTH = 32;
 
 function clean(text) {
@@ -8,6 +9,7 @@ function clean(text) {
     .toUpperCase();
 }
 
+/* ---------- Text wrapping ---------- */
 function wrap(text) {
   const lines = [];
 

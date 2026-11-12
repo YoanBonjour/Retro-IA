@@ -1,3 +1,4 @@
+/* ---------- Create printer server ---------- */
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { formatTicket } from "./src/js/ticket.js";

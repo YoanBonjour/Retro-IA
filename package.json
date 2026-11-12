@@ -6,7 +6,10 @@
     "clean:output": "rimraf dist",
     "clean:cache": "rimraf .parcel-cache",
     "dev": "npm run clean:cache && parcel src/index.html",
-    "build": "npm run clean:output && parcel build src/index.html --public-url '.' --no-cache"
+    "build": "npm run clean:output && parcel build src/index.html --public-url '.' --no-cache",
+    "api": "node --watch --env-file=.env server.mjs",
+    "printer": "node --watch printer-server.mjs",
+    "start:all": "concurrently -n PAGE,API,PRINTER -c green,cyan,yellow npm:dev npm:api npm:printer"
   },
   "repository": {
     "type": "git",
@@ -31,6 +34,7 @@
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.12.0",
+    "concurrently": "^10.0.7",
     "parcel": "^2.12.0",
     "parcel-namer-rewrite": "^2.10.3-rc.2",
     "posthtml-extend": "^0.6.5",

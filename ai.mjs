@@ -1,6 +1,7 @@
 const apiKey = process.env.AI_API_KEY;
 const MODEL = "gemini-3.5-flash-lite";
 
+/* ---------- AI personality ---------- */
 const SYSTEM_PROMPT = `Tu es SYSTEM-84, un ordinateur central mis en service en 1984.
 
 PERSONNALITE
@@ -21,6 +22,7 @@ REGLES
 - Si la question est dangereuse ou inappropriee, tu refuses en restant dans le personnage, par exemple "COMMANDE NON RECONNUE".
 - Tu ne dis jamais que tu es un modele de langage et tu ne cites aucune entreprise.`;
 
+/* ---------- Ask AI ---------- */
 export async function askAI(question) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,

@@ -1,3 +1,4 @@
+/* ---------- Ask server ---------- */
 async function askServer(question) {
   const response = await fetch(
     `http://localhost:3000/ask?q=${encodeURIComponent(question)}`,
@@ -12,6 +13,7 @@ async function askServer(question) {
 
 window.askServer = askServer;
 
+/* ---------- Initialize terminal ---------- */
 const log = document.querySelector("#log");
 const input = document.querySelector("#input");
 let busy = false;
@@ -22,6 +24,14 @@ function focusInput() {
   input.focus({ preventScroll: true });
 }
 
+function resizeInput() {
+  input.style.height = "auto";
+  input.style.height = `${input.scrollHeight}px`;
+}
+
+/* ---------- Force input ---------- */
+resizeInput();
+input.addEventListener("input", resizeInput);
 window.addEventListener("load", focusInput);
 window.addEventListener("focus", focusInput);
 document.addEventListener("click", focusInput);
@@ -30,6 +40,7 @@ input.addEventListener("keydown", (event) => {
   if (event.key === "Tab") event.preventDefault();
 });
 
+/* ---------- Create terminal text ---------- */
 function addLine(text, className = "") {
   const line = document.createElement("pre");
   line.className = `terminal__text ${className}`;
@@ -39,13 +50,17 @@ function addLine(text, className = "") {
   return line;
 }
 
+/* ---------- Send question, display result and busy state ---------- */
 input.addEventListener("keydown", async (event) => {
-  if (event.key !== "Enter" || busy) return;
+  if (event.key !== "Enter" || event.isComposing) return;
+  event.preventDefault();
+  if (busy) return;
 
   const question = input.value.trim();
   if (!question) return;
 
   input.value = "";
+  resizeInput();
   busy = true;
   addLine(`> ${question}`);
   const status = addLine("TRAITEMENT EN COURS...");
@@ -61,7 +76,7 @@ input.addEventListener("keydown", async (event) => {
   }
 });
 
-/* ---------- Gros titre en ASCII ---------- */
+/* ---------- Big title ASCII ---------- */
 
 const BANNER = [
   " #### #   #  #### ##### ##### #   #        ###  #  #",
@@ -71,7 +86,7 @@ const BANNER = [
   "####    #   ####    #   ##### #   #        ###     #",
 ].join("\n");
 
-/* ---------- Statut des serveurs ---------- */
+/* ---------- Server status ---------- */
 
 const statusBar = document.querySelector("#statusbar");
 
@@ -148,7 +163,7 @@ async function refreshStatus() {
   renderAll(await checkStatus());
 }
 
-/* ---------- Démarrage ---------- */
+/* ---------- Boot sequence, status refresh and intervals ---------- */
 
 async function boot() {
   busy = true;

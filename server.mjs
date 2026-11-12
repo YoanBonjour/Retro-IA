@@ -1,6 +1,7 @@
 import http from "node:http";
 import { askAI } from "./ai.mjs";
 
+/* ---------- Background server configuration ---------- */
 const PORT = 3000;
 const PRINTER_URL = "http://localhost:4000/print";
 let ticketNumber = 0;
@@ -16,6 +17,7 @@ async function printerIsOnline() {
   }
 }
 
+/* ---------- Send ticket to printer ---------- */
 async function sendToPrinter(ticket) {
   const response = await fetch(PRINTER_URL, {
     method: "POST",
@@ -28,6 +30,7 @@ async function sendToPrinter(ticket) {
   }
 }
 
+/* ---------- Create background server ---------- */
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:1234");
