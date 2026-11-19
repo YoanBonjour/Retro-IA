@@ -9,6 +9,8 @@
     "build": "npm run clean:output && parcel build src/index.html --public-url '.' --no-cache",
     "api": "node --watch --env-file=.env server.mjs",
     "printer": "node --watch printer-server.mjs",
+    "preview": "serve dist -l 1234",
+    "start:kiosk": "concurrently -n PAGE,API,PRINTER -c green,cyan,yellow npm:preview npm:api npm:printer",
     "start:all": "concurrently -n PAGE,API,PRINTER -c green,cyan,yellow npm:dev npm:api npm:printer"
   },
   "repository": {
@@ -41,6 +43,7 @@
     "posthtml-include": "^2.0.1",
     "posthtml-inline-svg": "^0.2.0",
     "rimraf": "^6.0.1",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "serve": "^14.2.8"
   }
 }
