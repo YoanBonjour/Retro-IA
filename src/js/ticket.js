@@ -1,5 +1,5 @@
 /* ---------- Ticket formatting ---------- */
-export const WIDTH = 40;
+export const WIDTH = 36;
 
 function clean(text) {
   return text
@@ -59,9 +59,10 @@ export function formatTicket(answer, number) {
   const dash = "-".repeat(WIDTH);
 
   return [
-    bar,
-    center("SYSTEM-84"),
-    center(`SESSION ${String(number).padStart(4, "0")}`),
+    "EIKON 1984",
+    dash,
+    "SYSTEM-84",
+    `TICKET ${String(number).padStart(4, "0")}`,
     bar,
     ...wrap(clean(answer)),
     dash,
