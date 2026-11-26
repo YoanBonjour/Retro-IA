@@ -63,7 +63,7 @@ input.addEventListener("keydown", async (event) => {
   resizeInput();
   busy = true;
   addLine(`> ${question}`);
-  const status = addLine("TRAITEMENT EN COURS...");
+  const status = typeLine("TRAITEMENT EN COURS...");
 
   try {
     const result = await askServer(question);
@@ -152,7 +152,8 @@ async function typeLine(text, className = "", speed = 25) {
 }
 
 async function revealBanner() {
-  const line = addLine("", "banner");
+  await sleep(1500);
+  const line = await typeLine("", "banner");
   for (const row of BANNER.split("\n")) {
     line.textContent += (line.textContent ? "\n" : "") + row;
     await sleep(120);
@@ -169,18 +170,18 @@ async function boot() {
   busy = true;
 
   await revealBanner();
-  await sleep(400);
+  await sleep(1500);
   addLine("");
 
   await typeLine("VERIFICATION DU SYSTEME...");
-  await sleep(600);
+  await sleep(1000);
 
-  mainLine = addLine("SERVEUR PRINCIPAL ...... ...");
-  await sleep(500);
-  printerLine = addLine("SERVEUR IMPRIMANTE .... ...");
-  await sleep(500);
+  mainLine = await typeLine("SERVEUR PRINCIPAL ...... ...");
+  await sleep(700);
+  printerLine = await typeLine("SERVEUR IMPRIMANTE .... ...");
+  await sleep(700);
   addLine("");
-  readyLine = addLine("");
+  readyLine = await typeLine("");
   addLine("");
 
   const status = await checkStatus();
@@ -189,7 +190,7 @@ async function boot() {
   setStatusLine(mainLine, "SERVEUR PRINCIPAL", status.server);
   await sleep(700);
   setStatusLine(printerLine, "SERVEUR IMPRIMANTE", status.printer);
-  await sleep(700);
+  await sleep(1000);
   renderAll(status);
 
   busy = false;
