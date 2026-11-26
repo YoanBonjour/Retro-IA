@@ -1,5 +1,5 @@
 /* ---------- Ticket formatting ---------- */
-export const WIDTH = 32;
+export const WIDTH = 40;
 
 function clean(text) {
   return text

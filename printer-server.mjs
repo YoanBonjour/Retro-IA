@@ -2,6 +2,57 @@
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { formatTicket } from "./src/js/ticket.js";
+import { Printer } from "@node-escpos/core";
+import USB from "@node-escpos/usb-adapter";
+
+const VENDOR_ID = 0x4b43;
+const PRODUCT_ID = 0x3830;
+
+function printOnPaper(text) {
+  return new Promise((resolve, reject) => {
+    let device;
+    try {
+      device = new USB(VENDOR_ID, PRODUCT_ID);
+    } catch {
+      reject(new Error("Imprimante introuvable"));
+      return;
+    }
+
+    device.open((error) => {
+      if (error) {
+        reject(new Error("Impossible d'ouvrir l'imprimante"));
+        return;
+      }
+
+      try {
+        const printer = new Printer(device, { encoding: "GB18030", width: 32 });
+        printer.align("ct");
+        for (const line of text.split("\n")) {
+          printer.text(line);
+        }
+        printer.text("").text("").text("").cut();
+        let finished = false;
+        const done = () => {
+          if (finished) return;
+          finished = true;
+          resolve();
+        };
+        printer.close(done);
+        setTimeout(done, 2000);
+      } catch (printError) {
+        reject(printError);
+      }
+    });
+  });
+}
+
+let queue = Promise.resolve();
+
+function enqueue(text) {
+  const job = queue.then(() => printOnPaper(text));
+  queue = job.catch(() => {});
+  return job;
+}
 
 const PORT = 4000;
 const clients = new Set();
@@ -14,18 +65,17 @@ function broadcast(ticket) {
   }
 }
 
-function printTicket({ number, answer }) {
+async function printTicket({ number, answer }) {
   const text = formatTicket(answer, number);
 
-  // 1. Dans la fenetre de terminal
   console.log("\n" + text + "\n");
 
-  // 2. En memoire (les 50 derniers)
+  await enqueue(text);
+
   const ticket = { number, text };
   history.push(ticket);
   if (history.length > 50) history.shift();
 
-  // 3. Vers les pages web connectees
   broadcast(ticket);
 }
 
@@ -74,14 +124,23 @@ const server = http.createServer(async (req, res) => {
       body += chunk;
     });
 
-    req.on("end", () => {
+    req.on("end", async () => {
+      let ticket;
       try {
-        const ticket = JSON.parse(body);
-        printTicket(ticket);
-        res.end(JSON.stringify({ printed: true }));
+        ticket = JSON.parse(body);
       } catch {
         res.statusCode = 400;
         res.end(JSON.stringify({ error: "Ticket invalide" }));
+        return;
+      }
+
+      try {
+        await printTicket(ticket);
+        res.end(JSON.stringify({ printed: true }));
+      } catch (error) {
+        console.error("Erreur impression :", error);
+        res.statusCode = 500;
+        res.end(JSON.stringify({ error: error.message }));
       }
     });
     return;

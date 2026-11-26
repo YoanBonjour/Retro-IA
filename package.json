@@ -45,5 +45,9 @@
     "rimraf": "^6.0.1",
     "sass": "^1.69.5",
     "serve": "^14.2.8"
+  },
+  "dependencies": {
+    "@node-escpos/core": "^0.6.0",
+    "@node-escpos/usb-adapter": "^0.3.1"
   }
 }

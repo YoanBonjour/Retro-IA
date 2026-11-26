@@ -57,8 +57,11 @@ const server = http.createServer(async (req, res) => {
       await sendToPrinter({ number: ticketNumber, answer });
       res.end(JSON.stringify({ number: ticketNumber }));
     } catch (error) {
+      console.error("Erreur /ask :", error);
       res.statusCode = 500;
-      res.end(JSON.stringify({ error: error.message }));
+      res.end(
+        JSON.stringify({ error: error.message, cause: error.cause?.code }),
+      );
     }
     return;
   }
